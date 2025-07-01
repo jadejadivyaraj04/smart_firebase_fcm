@@ -41,7 +41,7 @@ void main() async {
 
   runApp(const MyApp());
 }
-```
+````
 
 ### 2. Handle Notification Taps
 
@@ -53,15 +53,12 @@ void handleMessage(RemoteMessage message) {
 
   switch (type) {
     case 'order':
-      // Navigate to order screen
       navigatorKey.currentState?.pushNamed('/order', arguments: message.data['order_id']);
       break;
     case 'chat':
-      // Navigate to chat screen
       navigatorKey.currentState?.pushNamed('/chat');
       break;
     default:
-      // Handle unknown notification types
       print('Unknown notification type: $type');
       break;
   }
@@ -70,11 +67,86 @@ void handleMessage(RemoteMessage message) {
 
 ### 3. Retrieve FCM Device Token
 
-Get the FCM device token for sending targeted notifications.
-
 ```dart
 final token = await FCMInitializer.getDeviceToken();
 print('FCM Token: $token');
+```
+
+---
+
+## 📱 Android Configuration
+
+1. Add the `google-services.json` file to your Android project at:
+
+   ```
+   android/app/google-services.json
+   ```
+
+2. Update your `android/build.gradle`:
+
+```gradle
+buildscript {
+  dependencies {
+    classpath 'com.google.gms:google-services:4.3.15'
+  }
+}
+```
+
+3. Update `android/app/build.gradle`:
+
+```gradle
+apply plugin: 'com.google.gms.google-services'
+
+dependencies {
+  implementation 'com.google.firebase:firebase-messaging:23.0.8'
+}
+```
+
+4. Ensure these permissions in `AndroidManifest.xml`:
+
+```xml
+<uses-permission android:name="android.permission.INTERNET"/>
+```
+
+5. Add FCM service inside `<application>` tag:
+
+```xml
+<service
+        android:name="com.google.firebase.messaging.FirebaseMessagingService"
+        android:exported="true">
+  <intent-filter>
+    <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+  </intent-filter>
+</service>
+```
+
+---
+
+## 🍎 iOS Configuration
+
+1. Add the `GoogleService-Info.plist` file to your Xcode project in `Runner/`.
+
+2. In `ios/Podfile`, ensure platform is at least iOS 12:
+
+```ruby
+platform :ios, '12.0'
+```
+
+3. Add required capabilities:
+
+  * Enable **Push Notifications**
+  * Enable **Background Modes** → Check **Remote notifications**
+
+4. Add notification permission request in `Info.plist`:
+
+```xml
+<key>FirebaseAppDelegateProxyEnabled</key>
+<false/>
+<key>NSAppTransportSecurity</key>
+<dict>
+<key>NSAllowsArbitraryLoads</key>
+<true/>
+</dict>
 ```
 
 ---
@@ -85,22 +157,20 @@ Add the package to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  smart_firebase_fcm: ^1.0.2
+  smart_firebase_fcm: ^1.0.3
 ```
 
-Run the following command to install:
+Install with:
 
 ```bash
 flutter pub get
 ```
 
-> **Note**: Ensure Firebase is set up in your Flutter project. Follow the [official Firebase setup guide](https://firebase.google.com/docs/flutter/setup) for iOS and Android.
+> **Note**: Ensure Firebase is set up for your Flutter project. Follow the [official Firebase setup guide](https://firebase.google.com/docs/flutter/setup).
 
 ---
 
 ## 🔧 Notification Payload Structure
-
-For proper redirection, your backend should send a `data` payload with the notification. Example:
 
 ```json
 {
@@ -119,22 +189,21 @@ For proper redirection, your backend should send a `data` payload with the notif
 
 ## 🧱 Under the Hood
 
-- **Firebase Initialization**: Automatically handles `Firebase.initializeApp()` and permission requests.
-- **FCM Listeners**:
-  - `onMessage`: Handles foreground notifications.
-  - `onMessageOpenedApp`: Processes taps on background notifications.
-  - `getInitialMessage`: Manages notifications from terminated state.
-- **Local Notifications**: Uses `flutter_local_notifications` for foreground notifications on Android and iOS.
-- **Android Notification Channels**: Pre-configured for reliable notification delivery.
-- **Feature Flags**: Enable or disable Firebase Analytics, Crashlytics, or FCM independently.
+* **Firebase Initialization**: Handles `Firebase.initializeApp()` and permissions.
+* **FCM Listeners**:
+
+  * `onMessage` (Foreground)
+  * `onMessageOpenedApp` (Background)
+  * `getInitialMessage` (Terminated)
+* **Local Notifications**: Uses `flutter_local_notifications`.
+* **Notification Channels**: Preconfigured for Android.
+* **Feature Flags**: Control Analytics, Crashlytics, and FCM independently.
 
 ---
 
 ## 🧪 Example App
 
-A fully functional example is available in the [`example/`](example/) directory.
-
-To run the example:
+To test the full flow:
 
 ```bash
 cd example/
@@ -145,17 +214,14 @@ flutter run
 
 ## ❓ FAQ
 
-**Q: Can I use this package without Firebase Analytics or Crashlytics?**  
-A: Yes! Use `FirebaseFeatureFlags` to enable or disable specific features as needed.
+**Q: Can I use this package without Firebase Analytics or Crashlytics?**
+✅ Yes — just toggle the flags in `FirebaseFeatureFlags`.
 
-**Q: How do I customize notification redirection?**  
-A: Implement your navigation logic in the `FCMHandler.handleMessage` function.
+**Q: How do I customize notification navigation?**
+🛠️ Implement your redirection logic inside `FCMHandler.handleMessage`.
 
-**Q: Is this package compatible with iOS and Android?**  
-A: Yes, it supports both platforms. Ensure proper notification permissions are configured for iOS.
-
-**Q: What if I encounter issues with FCM setup?**  
-A: Verify your Firebase configuration and ensure the correct Google Services file (`google-services.json` for Android, `GoogleService-Info.plist` for iOS) is included in your project.
+**Q: iOS not receiving notifications?**
+📲 Ensure permissions and capabilities are properly set in Xcode.
 
 ---
 
@@ -167,5 +233,5 @@ MIT License © 2025 [Divyaraj Jadeja](https://github.com/jadejadivyaraj04)
 
 ## 💬 Support
 
-For issues, feature requests, or contributions, visit the [GitHub repository](https://github.com/jadejadivyaraj04/smart_firebase_fcm).
-```
+Please report bugs or contribute at [GitHub Repository](https://github.com/jadejadivyaraj04/smart_firebase_fcm)
+
