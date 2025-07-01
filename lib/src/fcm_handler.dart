@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'dart:developer' as developer;
 
 class FCMHandler {
   static void handleMessage(RemoteMessage message) {
@@ -7,16 +8,16 @@ class FCMHandler {
     if (data.containsKey('type')) {
       switch (data['type']) {
         case 'order':
-          print("➡ Redirect to Order: ${data['order_id']}");
+          developer.log("➡ Redirect to Order: ${data['order_id']}");
           break;
         case 'chat':
-          print("➡ Redirect to Chat: ${data['chat_id']}");
+          developer.log("➡ Redirect to Chat: ${data['chat_id']}");
           break;
         default:
-          print("🔁 Unknown redirection type.");
+          developer.log("🔁 Unknown redirection type.");
       }
     } else {
-      print("ℹ️ No redirection type found in message.");
+      developer.log("ℹ️ No redirection type found in message.");
     }
   }
 }

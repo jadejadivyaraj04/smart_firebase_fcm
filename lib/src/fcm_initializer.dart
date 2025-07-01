@@ -5,7 +5,6 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'feature_flags.dart';
 import 'local_notification_service.dart';
-import 'fcm_handler.dart';
 
 class FCMInitializer {
   static Future<void> initialize({
