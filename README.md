@@ -1,4 +1,3 @@
-```markdown
 # 🔔 smart_firebase_fcm
 
 A lightweight, plug-and-play Firebase FCM (Push Notification) package for Flutter, offering seamless support for foreground, background, and terminated notifications, deep link redirection, local notifications, and customizable Firebase Analytics and Crashlytics integration.
