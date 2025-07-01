@@ -85,7 +85,7 @@ Add the package to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  smart_firebase_fcm: ^1.0.1
+  smart_firebase_fcm: ^1.0.2
 ```
 
 Run the following command to install:
