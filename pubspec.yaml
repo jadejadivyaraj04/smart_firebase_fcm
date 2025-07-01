@@ -1,9 +1,9 @@
 name: smart_firebase_fcm
 description: A plug-and-play modular Firebase FCM package with local notifications, redirection, and manual feature toggles (analytics, crashlytics, etc.).
-version: 1.0.0
-homepage: https://github.com/YOUR_USERNAME/my_firebase_fcm
-repository: https://github.com/YOUR_USERNAME/my_firebase_fcm
-issue_tracker: https://github.com/YOUR_USERNAME/my_firebase_fcm/issues
+version: 1.0.1
+homepage: https://github.com/jadejadivyaraj04/smart_firebase_fcm
+repository: https://github.com/jadejadivyaraj04/smart_firebase_fcm
+issue_tracker: https://github.com/jadejadivyaraj04/smart_firebase_fcm/issues
 
 environment:
   sdk: ^3.8.1
