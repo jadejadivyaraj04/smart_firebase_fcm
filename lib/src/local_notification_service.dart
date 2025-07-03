@@ -5,14 +5,23 @@ class LocalNotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
   FlutterLocalNotificationsPlugin();
 
-  static Future<void> initialize() async {
+  static Future<void> initialize({Function(String?)? onTap}) async {
     const AndroidInitializationSettings androidSettings =
     AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    const InitializationSettings initSettings =
-    InitializationSettings(android: androidSettings);
+    final InitializationSettings initSettings = InitializationSettings(
+      android: androidSettings,
+    );
 
-    await _notificationsPlugin.initialize(initSettings);
+    // Set up the tap handler
+    await _notificationsPlugin.initialize(
+      initSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        if (onTap != null) {
+          onTap(response.payload);
+        }
+      },
+    );
   }
 
   static void showNotification(RemoteMessage message) {
@@ -31,6 +40,7 @@ class LocalNotificationService {
       message.notification?.title ?? 'New Message',
       message.notification?.body ?? '',
       platformDetails,
+      payload: message.data.toString(),
     );
   }
 }
