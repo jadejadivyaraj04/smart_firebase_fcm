@@ -25,4 +25,5 @@ dev_dependencies:
   flutter_lints: ^5.0.0
 
 executables:
-  smart_asset_generator: smart_asset_generator
+  smart_firebase_fcm_generator: smart_firebase_fcm_generator
+  ios_setup_helper: ios_setup_helper

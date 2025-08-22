@@ -104,7 +104,7 @@ class NotificationHandler {
       final settings = await messaging.requestPermission(
         alert: true,
         announcement: false,
-        badge: true,
+        badge: false, // Disable badge display
         carPlay: false,
         criticalAlert: false,
         provisional: false,

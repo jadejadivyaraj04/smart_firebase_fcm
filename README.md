@@ -2,6 +2,8 @@
 
 A lightweight, plug-and-play Firebase FCM (Push Notification) package for Flutter, offering seamless support for foreground, background, and terminated notifications, deep link redirection, local notifications, and customizable Firebase Analytics and Crashlytics integration.
 
+**🍎 NEW: Enhanced iOS Support with Automated Setup Tools!**
+
 ---
 
 ## ✨ Features
@@ -10,10 +12,12 @@ A lightweight, plug-and-play Firebase FCM (Push Notification) package for Flutte
 - **Notification Handling**: Supports foreground, background, and terminated state notifications.
 - **Local Notifications**: Integrates `flutter_local_notifications` for foreground notifications.
 - **Android Notification Channels**: Pre-configured for consistent Android notification delivery.
+- **🍎 Enhanced iOS Support**: Automated iOS configuration with foreground notification display.
 - **Feature Toggles**: Enable or disable Firebase Analytics, Crashlytics, and FCM via flags.
 - **Deep Link Redirection**: Easily handle notification taps with customizable navigation logic.
 - **Clean & Modular**: Well-structured, extensible code for easy customization.
 - **🚀 CLI Generator**: Generate notification handler files with a single command.
+- **🍎 iOS Setup Helper**: Automated iOS configuration and setup assistance.
 
 ---
 
@@ -35,9 +39,11 @@ void main() async {
   FirebaseFeatureFlags.enableCrashlytics = true;
   FirebaseFeatureFlags.enableFCM = true;
 
-  // Initialize FCM with a callback for notification taps
+  // Initialize FCM with iOS configuration enabled
   await FCMInitializer.initialize(
     onTap: FCMHandler.handleMessage,
+    enableIOSConfig: true, // Enable iOS-specific configuration
+    showLocalNotificationsInForeground: false, // Let Firebase handle foreground notifications automatically
   );
 
   runApp(const MyApp());
@@ -71,7 +77,72 @@ void handleMessage(RemoteMessage message) {
 ```dart
 final token = await FCMInitializer.getDeviceToken();
 print('FCM Token: $token');
+
+// iOS-specific token retrieval
+if (Platform.isIOS) {
+  final iosToken = await FCMInitializer.getIOSDeviceToken();
+  print('iOS Token: $iosToken');
+}
 ```
+
+---
+
+## 🍎 iOS Configuration
+
+### Automated iOS Setup
+
+Use the iOS setup helper to automate iOS configuration:
+
+```bash
+# Check current iOS setup
+dart run ios_setup_helper --check
+
+# View iOS setup instructions
+dart run ios_setup_helper --instructions
+
+# Generate iOS configuration files
+dart run ios_setup_helper --generate
+
+# Interactive setup mode
+dart run ios_setup_helper
+```
+
+### iOS-specific Features
+
+```dart
+// Check iOS notification settings
+await FCMInitializer.checkIOSNotificationSettings();
+
+// Print iOS configuration instructions
+FCMInitializer.printIOSConfigurationInstructions();
+
+// Get iOS-specific device token
+final iosToken = await FCMInitializer.getIOSDeviceToken();
+```
+
+### iOS Foreground Notifications
+
+The package now automatically handles iOS foreground notification display:
+
+- ✅ Shows notification banners when app is in foreground
+- ✅ Plays notification sounds
+- ✅ Handles notification taps properly
+- ✅ **Prevents duplicate notifications** by controlling Firebase vs local notification display
+
+#### Duplicate Notification Prevention
+
+To avoid duplicate notifications on iOS, the package provides a `showLocalNotificationsInForeground` flag:
+
+```dart
+await FCMInitializer.initialize(
+  onTap: handleNotificationTap,
+  enableIOSConfig: true,
+  showLocalNotificationsInForeground: false, // Let Firebase handle automatically
+);
+```
+
+- **`false` (default)**: Firebase shows notifications automatically, no local notifications
+- **`true`**: Firebase automatic display disabled, local notifications shown instead
 
 ---
 
@@ -187,6 +258,17 @@ dependencies {
 
 ## 🍎 iOS Configuration
 
+### Quick Setup with iOS Helper
+
+```bash
+# Run the iOS setup helper
+dart run ios_setup_helper
+
+# This will guide you through the entire iOS setup process
+```
+
+### Manual Setup
+
 1. Add the `GoogleService-Info.plist` file to your Xcode project in `Runner/`.
 
 2. In `ios/Podfile`, ensure platform is at least iOS 12:
@@ -211,96 +293,3 @@ platform :ios, '12.0'
 <true/>
 </dict>
 ```
-
----
-
-## 📦 Installation
-
-Add the package to your `pubspec.yaml`:
-
-```yaml
-dependencies:
-  smart_firebase_fcm: ^1.0.3
-```
-
-Install with:
-
-```bash
-flutter pub get
-```
-
-> **Note**: Ensure Firebase is set up for your Flutter project. Follow the [official Firebase setup guide](https://firebase.google.com/docs/flutter/setup).
-
----
-
-## 🔧 Notification Payload Structure
-
-```json
-{
-  "notification": {
-    "title": "New Order!",
-    "body": "You have a new order."
-  },
-  "data": {
-    "type": "order",
-    "order_id": "12345"
-  }
-}
-```
-
----
-
-## 🧱 Under the Hood
-
-* **Firebase Initialization**: Handles `Firebase.initializeApp()` and permissions.
-* **FCM Listeners**:
-
-    * `onMessage` (Foreground)
-    * `onMessageOpenedApp` (Background)
-    * `getInitialMessage` (Terminated)
-* **Local Notifications**: Uses `flutter_local_notifications`.
-* **Notification Channels**: Preconfigured for Android.
-* **Feature Flags**: Control Analytics, Crashlytics, and FCM independently.
-* **CLI Generator**: Automatically generates notification handler boilerplate code.
-
----
-
-## 🧪 Example App
-
-To test the full flow:
-
-```bash
-cd example/
-flutter run
-```
-
----
-
-## ❓ FAQ
-
-**Q: Can I use this package without Firebase Analytics or Crashlytics?**
-✅ Yes — just toggle the flags in `FirebaseFeatureFlags`.
-
-**Q: How do I customize notification navigation?**
-🛠️ Implement your redirection logic inside `FCMHandler.handleMessage` or use the CLI generator to create a custom handler.
-
-**Q: iOS not receiving notifications?**
-📲 Ensure permissions and capabilities are properly set in Xcode.
-
-**Q: How do I use the CLI generator?**
-🚀 Run `dart run smart_firebase_fcm:smart_firebase_fcm_generator notification path=lib/services/notification_handler.dart export=lib/exports.dart` in your project directory.
-
-**Q: Can I customize the generated notification handler?**
-✅ Yes — the generated code is fully customizable and serves as a starting point for your notification implementation.
-
----
-
-## 📄 License
-
-MIT License © 2025 [Divyaraj Jadeja](https://github.com/jadejadivyaraj04)
-
----
-
-## 💬 Support
-
-Please report bugs or contribute at [GitHub Repository](https://github.com/jadejadivyaraj04/smart_firebase_fcm)
