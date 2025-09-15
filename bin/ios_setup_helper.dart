@@ -49,17 +49,17 @@ void _printHelp() {
 void _printIOSInstructions() {
   print('🍎 iOS FCM Configuration Instructions');
   print('=====================================\n');
-  
+
   print('1. 📱 Add GoogleService-Info.plist');
   print('   - Download from Firebase Console');
   print('   - Add to Xcode project in Runner/');
   print('   - Ensure it\'s included in your target\n');
-  
+
   print('2. 📦 Update ios/Podfile');
   print('   - Ensure platform is at least iOS 12:');
   print('     platform :ios, "12.0"');
   print('   - Run: cd ios && pod install\n');
-  
+
   print('3. ⚙️ Xcode Project Settings');
   print('   - Open ios/Runner.xcworkspace');
   print('   - Select Runner target');
@@ -67,7 +67,7 @@ void _printIOSInstructions() {
   print('   - Add capability: Push Notifications');
   print('   - Add capability: Background Modes');
   print('   - Check: Remote notifications\n');
-  
+
   print('4. 📄 Update Info.plist');
   print('   - Add these keys:');
   print('     <key>FirebaseAppDelegateProxyEnabled</key>');
@@ -77,16 +77,16 @@ void _printIOSInstructions() {
   print('       <key>NSAllowsArbitraryLoads</key>');
   print('       <true/>');
   print('     </dict>\n');
-  
+
   print('5. 🔑 Entitlements');
   print('   - Ensure push notification entitlements are enabled');
   print('   - Check your provisioning profile supports push notifications\n');
-  
+
   print('6. 🧪 Testing');
   print('   - Test on physical device (not simulator)');
   print('   - Ensure device has internet connection');
   print('   - Check notification permissions in Settings app\n');
-  
+
   print('7. 🐛 Troubleshooting');
   print('   - Check Xcode console for errors');
   print('   - Verify Firebase configuration');
@@ -95,13 +95,13 @@ void _printIOSInstructions() {
 
 Future<void> _checkIOSSetup() async {
   print('🔍 Checking iOS Setup...\n');
-  
+
   // Check if running on macOS
   if (!Platform.isMacOS) {
     print('⚠️  This tool should be run on macOS for iOS development');
     return;
   }
-  
+
   // Check for iOS project directory
   final iosDir = Directory('ios');
   if (!iosDir.existsSync()) {
@@ -109,16 +109,16 @@ Future<void> _checkIOSSetup() async {
     print('   Make sure you\'re in a Flutter project root');
     return;
   }
-  
+
   print('✅ iOS directory found');
-  
+
   // Check for Podfile
   final podfile = File('ios/Podfile');
   if (podfile.existsSync()) {
     final content = await podfile.readAsString();
     if (content.contains('platform :ios')) {
       print('✅ Podfile found');
-      
+
       // Simple iOS version check
       if (content.contains('platform :ios, \'12.0\'')) {
         print('✅ iOS platform version: 12.0');
@@ -134,7 +134,7 @@ Future<void> _checkIOSSetup() async {
   } else {
     print('❌ Podfile not found');
   }
-  
+
   // Check for GoogleService-Info.plist
   final googleServiceFile = File('ios/Runner/GoogleService-Info.plist');
   if (googleServiceFile.existsSync()) {
@@ -143,7 +143,7 @@ Future<void> _checkIOSSetup() async {
     print('❌ GoogleService-Info.plist not found');
     print('   Download from Firebase Console and add to ios/Runner/');
   }
-  
+
   // Check for Runner.xcworkspace
   final workspace = Directory('ios/Runner.xcworkspace');
   if (workspace.existsSync()) {
@@ -152,7 +152,7 @@ Future<void> _checkIOSSetup() async {
     print('❌ Runner.xcworkspace not found');
     print('   Run: cd ios && pod install');
   }
-  
+
   print('\n📋 Next Steps:');
   print('1. Open ios/Runner.xcworkspace in Xcode');
   print('2. Add Push Notifications capability');
@@ -162,12 +162,12 @@ Future<void> _checkIOSSetup() async {
 
 Future<void> _generateIOSFiles() async {
   print('🔧 Generating iOS Configuration Files...\n');
-  
+
   // Generate iOS-specific configuration
   await _generateIOSConfig();
   await _generatePodfileTemplate();
   await _generateInfoPlistTemplate();
-  
+
   print('✅ iOS configuration files generated');
   print('📱 Review and customize these files as needed');
 }
@@ -197,7 +197,7 @@ class IOSConfig {
   ];
 }
 ''';
-  
+
   final file = File('ios/Runner/ios_config.dart');
   await file.create(recursive: true);
   await file.writeAsString(content);
@@ -259,7 +259,7 @@ post_install do |installer|
   end
 end
 ''';
-  
+
   final file = File('ios/Podfile.template');
   await file.create(recursive: true);
   await file.writeAsString(content);
@@ -300,7 +300,7 @@ Future<void> _generateInfoPlistTemplate() async {
 </dict>
 </plist>
 ''';
-  
+
   final file = File('ios/Info.plist.template');
   await file.create(recursive: true);
   await file.writeAsString(content);
@@ -309,16 +309,16 @@ Future<void> _generateInfoPlistTemplate() async {
 
 Future<void> _interactiveSetup() async {
   print('🤔 Interactive iOS Setup Mode\n');
-  
+
   print('What would you like to do?');
   print('1. Check current setup');
   print('2. View setup instructions');
   print('3. Generate configuration files');
   print('4. Exit');
-  
+
   stdout.write('\nEnter your choice (1-4): ');
   final choice = stdin.readLineSync();
-  
+
   switch (choice) {
     case '1':
       await _checkIOSSetup();

@@ -15,7 +15,8 @@ void main() async {
   await FCMInitializer.initialize(
     onTap: FCMHandler.handleMessage,
     enableIOSConfig: true, // Enable iOS-specific configuration
-    showLocalNotificationsInForeground: false, // Let Firebase handle foreground notifications automatically
+    showLocalNotificationsInForeground:
+        false, // Let Firebase handle foreground notifications automatically
   );
 
   // Check iOS notification settings (iOS only)
@@ -32,10 +33,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'FCM Example App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
       home: const MyHomePage(),
     );
   }
@@ -60,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _getDeviceToken() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final token = await FCMInitializer.getDeviceToken();
       setState(() {
@@ -77,9 +75,9 @@ class _MyHomePageState extends State<MyHomePage> {
     if (Platform.isIOS) {
       await FCMInitializer.checkIOSNotificationSettings();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('This feature is iOS-only')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('This feature is iOS-only')));
     }
   }
 
@@ -89,9 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _navigateToTestNotifications() {
     Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const TestNotificationWidget(),
-      ),
+      MaterialPageRoute(builder: (context) => const TestNotificationWidget()),
     );
   }
 
@@ -112,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
-            
+
             // Device Token Section
             Card(
               child: Padding(
@@ -143,9 +139,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 20),
-            
+
             // Test Notifications Section
             Card(
               child: Padding(
@@ -155,7 +151,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   children: [
                     const Text(
                       '🧪 Test Notifications',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     ElevatedButton(
@@ -171,9 +170,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 20),
-            
+
             // iOS-specific features
             if (Platform.isIOS) ...[
               Card(
@@ -184,7 +183,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     children: [
                       const Text(
                         '🍎 iOS Features',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 12),
                       ElevatedButton(
@@ -201,9 +203,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ],
-            
+
             const SizedBox(height: 20),
-            
+
             // Instructions
             Card(
               child: Padding(
@@ -213,7 +215,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   children: [
                     const Text(
                       'Testing Notifications:',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     const Text(

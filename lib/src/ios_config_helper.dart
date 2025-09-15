@@ -10,7 +10,9 @@ class IOSConfigHelper {
   static bool get isIOS => Platform.isIOS;
 
   /// Initialize iOS-specific FCM settings
-  static Future<void> initializeIOS({bool enableForegroundNotifications = true}) async {
+  static Future<void> initializeIOS({
+    bool enableForegroundNotifications = true,
+  }) async {
     if (!isIOS) return;
 
     try {
@@ -35,7 +37,7 @@ class IOSConfigHelper {
   static Future<void> _requestIOSPermissions() async {
     try {
       final messaging = FirebaseMessaging.instance;
-      
+
       // Request permission for iOS
       final settings = await messaging.requestPermission(
         alert: true,
@@ -46,11 +48,14 @@ class IOSConfigHelper {
         sound: true,
       );
 
-      print('$_tag iOS Notification permission status: ${settings.authorizationStatus}');
-      
+      print(
+        '$_tag iOS Notification permission status: ${settings.authorizationStatus}',
+      );
+
       if (settings.authorizationStatus == AuthorizationStatus.authorized) {
         print('$_tag ✅ iOS notifications authorized');
-      } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+      } else if (settings.authorizationStatus ==
+          AuthorizationStatus.provisional) {
         print('$_tag ⚠️ iOS notifications provisionally authorized');
       } else {
         print('$_tag ❌ iOS notifications not authorized');
@@ -61,16 +66,18 @@ class IOSConfigHelper {
   }
 
   /// Configure iOS-specific FCM settings
-  static Future<void> _configureIOSFCM(bool enableForegroundNotifications) async {
+  static Future<void> _configureIOSFCM(
+    bool enableForegroundNotifications,
+  ) async {
     try {
       final messaging = FirebaseMessaging.instance;
 
       // Enable iOS-specific features
       if (enableForegroundNotifications) {
         await messaging.setForegroundNotificationPresentationOptions(
-          alert: true,    // Show alert banner
-          badge: false,   // Disable badge display
-          sound: true,    // Play sound
+          alert: true, // Show alert banner
+          badge: false, // Disable badge display
+          sound: true, // Play sound
         );
         print('$_tag iOS foreground notification options configured');
       } else {
@@ -86,7 +93,9 @@ class IOSConfigHelper {
     try {
       // This would typically be done in native iOS code
       // For now, we'll just log that it should be configured
-      print('$_tag ℹ️ Configure notification categories in iOS native code if needed');
+      print(
+        '$_tag ℹ️ Configure notification categories in iOS native code if needed',
+      );
       print('$_tag Example categories: reply, accept, decline, etc.');
     } catch (e) {
       print('$_tag Error setting up notification categories: $e');
@@ -100,11 +109,11 @@ class IOSConfigHelper {
     try {
       final messaging = FirebaseMessaging.instance;
       final token = await messaging.getToken();
-      
+
       if (token != null) {
         print('$_tag iOS Device Token: $token');
       }
-      
+
       return token;
     } catch (e) {
       print('$_tag Error getting iOS device token: $e');
@@ -143,7 +152,7 @@ class IOSConfigHelper {
     try {
       final messaging = FirebaseMessaging.instance;
       final settings = await messaging.getNotificationSettings();
-      
+
       print('$_tag iOS Notification Settings:');
       print('$_tag - Authorization Status: ${settings.authorizationStatus}');
       print('$_tag - Alert: ${settings.alert}');

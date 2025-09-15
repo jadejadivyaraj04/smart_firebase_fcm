@@ -10,7 +10,8 @@ Future<void> generateNotificationHandler({
   final file = File(outputPath);
   final project = getProjectName();
 
-  final content = '''
+  final content =
+      '''
 import 'package:$project/exports.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -174,7 +175,9 @@ class NotificationHandler {
     final current = exists ? await exportFile.readAsString() : '';
 
     // Compute relative path (strip "lib/")
-    String relativePath = outputPath.startsWith('lib/') ? outputPath.substring(4) : outputPath;
+    String relativePath = outputPath.startsWith('lib/')
+        ? outputPath.substring(4)
+        : outputPath;
     final exportLine = "export 'package:$project/$relativePath';";
 
     if (!current.contains(exportLine)) {
@@ -207,10 +210,15 @@ String getProjectName() {
 
 extension SnakeCaseExtension on String {
   String toSnakeCase() {
-    return replaceAllMapped(RegExp(r'(?<=[a-z])[A-Z]'), (match) => '_${match.group(0)!.toLowerCase()}').toLowerCase();
+    return replaceAllMapped(
+      RegExp(r'(?<=[a-z])[A-Z]'),
+      (match) => '_${match.group(0)!.toLowerCase()}',
+    ).toLowerCase();
   }
 
   String toPascalCase() {
-    return split('_').map((s) => s.isNotEmpty ? s[0].toUpperCase() + s.substring(1) : '').join();
+    return split('_')
+        .map((s) => s.isNotEmpty ? s[0].toUpperCase() + s.substring(1) : '')
+        .join();
   }
 }

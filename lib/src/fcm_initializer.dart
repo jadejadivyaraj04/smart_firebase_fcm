@@ -23,7 +23,8 @@ class FCMInitializer {
     required void Function(RemoteMessage message) onTap,
     FirebaseOptions? firebaseOptions,
     bool enableIOSConfig = true,
-    bool showLocalNotificationsInForeground = false, // Control local notification display
+    bool showLocalNotificationsInForeground =
+        false, // Control local notification display
   }) async {
     _onTapCallback = onTap;
 
@@ -37,7 +38,9 @@ class FCMInitializer {
     if (enableIOSConfig && Platform.isIOS) {
       // Disable Firebase automatic foreground notifications to avoid duplicates
       // We'll handle them manually if showLocalNotificationsInForeground is true
-      await IOSConfigHelper.initializeIOS(enableForegroundNotifications: !showLocalNotificationsInForeground);
+      await IOSConfigHelper.initializeIOS(
+        enableForegroundNotifications: !showLocalNotificationsInForeground,
+      );
     }
 
     // 🔔 Setup Local Notification Service
@@ -59,7 +62,7 @@ class FCMInitializer {
       print('📱 Foreground message received: ${message.messageId}');
       print('📱 Title: ${message.notification?.title}');
       print('📱 Body: ${message.notification?.body}');
-      
+
       // Only show local notification if explicitly requested
       // Firebase will automatically show notifications on iOS when configured
       if (showLocalNotificationsInForeground) {
@@ -76,7 +79,9 @@ class FCMInitializer {
     // 🚀 App launched from terminated state by tapping a notification
     final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
-      print('🚀 App launched from terminated state with message: ${initialMessage.messageId}');
+      print(
+        '🚀 App launched from terminated state with message: ${initialMessage.messageId}',
+      );
       _onTapCallback?.call(initialMessage);
     }
 
@@ -95,12 +100,13 @@ class FCMInitializer {
 
     try {
       // Enable iOS-specific features
-      await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-        alert: true,    // Show alert banner
-        badge: false,   // Disable badge display
-        sound: true,    // Play sound
-      );
-      
+      await FirebaseMessaging.instance
+          .setForegroundNotificationPresentationOptions(
+            alert: true, // Show alert banner
+            badge: false, // Disable badge display
+            sound: true, // Play sound
+          );
+
       print('🍎 iOS foreground notification presentation enabled');
     } catch (e) {
       print('⚠️ Error setting up iOS foreground notifications: $e');
@@ -111,16 +117,16 @@ class FCMInitializer {
   static Future<String?> getDeviceToken() async {
     try {
       final token = await FirebaseMessaging.instance.getToken();
-      
+
       if (token != null) {
         print('📱 Device FCM Token: $token');
-        
+
         // Log iOS-specific token info
         if (Platform.isIOS) {
           print('🍎 iOS Device Token retrieved successfully');
         }
       }
-      
+
       return token;
     } catch (e) {
       print('⚠️ Error getting device token: $e');
@@ -134,7 +140,7 @@ class FCMInitializer {
       print('⚠️ This method is iOS-specific');
       return null;
     }
-    
+
     return await IOSConfigHelper.getIOSDeviceToken();
   }
 
@@ -144,7 +150,7 @@ class FCMInitializer {
       print('⚠️ This method is iOS-specific');
       return;
     }
-    
+
     await IOSConfigHelper.checkIOSNotificationSettings();
   }
 

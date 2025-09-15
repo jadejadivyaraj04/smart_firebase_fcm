@@ -6,10 +6,14 @@ import 'package:smart_firebase_fcm/src/generator.dart';
 Future<void> main(List<String> args) async {
   if (args.isEmpty) {
     print('❌ Missing arguments.\nUsage:');
-    print('  dart run smart_firebase_fcm_generator notification path=<output_path> [export=<export_file_path>]');
+    print(
+      '  dart run smart_firebase_fcm_generator notification path=<output_path> [export=<export_file_path>]',
+    );
     print('');
     print('Example:');
-    print('  dart run smart_firebase_fcm_generator notification path=lib/services/notification_handler.dart export=lib/exports.dart');
+    print(
+      '  dart run smart_firebase_fcm_generator notification path=lib/services/notification_handler.dart export=lib/exports.dart',
+    );
     return;
   }
 
@@ -32,11 +36,16 @@ Future<void> main(List<String> args) async {
     final exportPath = argsMap['export'];
 
     if (outputPath == null) {
-      print('❌ Usage: dart run smart_firebase_fcm_generator notification path=lib/services/notification_handler.dart [export=lib/exports.dart]');
+      print(
+        '❌ Usage: dart run smart_firebase_fcm_generator notification path=lib/services/notification_handler.dart [export=lib/exports.dart]',
+      );
       return;
     }
 
-    await generateNotificationHandler(outputPath: outputPath, exportFilePath: exportPath);
+    await generateNotificationHandler(
+      outputPath: outputPath,
+      exportFilePath: exportPath,
+    );
   } else {
     print('❌ Unknown command: $command');
     print('Available commands:');

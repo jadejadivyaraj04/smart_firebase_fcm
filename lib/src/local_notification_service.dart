@@ -4,18 +4,19 @@ import 'dart:io';
 
 class LocalNotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+      FlutterLocalNotificationsPlugin();
 
   static Future<void> initialize({Function(String?)? onTap}) async {
     const AndroidInitializationSettings androidSettings =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
     // iOS-specific initialization settings
-    const DarwinInitializationSettings iosSettings = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: false, // Disable badge permissions
-      requestSoundPermission: true,
-    );
+    const DarwinInitializationSettings iosSettings =
+        DarwinInitializationSettings(
+          requestAlertPermission: true,
+          requestBadgePermission: false, // Disable badge permissions
+          requestSoundPermission: true,
+        );
 
     final InitializationSettings initSettings = InitializationSettings(
       android: androidSettings,
@@ -41,14 +42,16 @@ class LocalNotificationService {
   static Future<void> _requestIOSPermissions() async {
     try {
       final bool? result = await _notificationsPlugin
-          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+          .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin
+          >()
           ?.requestPermissions(
             alert: true,
             badge: true,
             sound: true,
             critical: false,
           );
-      
+
       print('📱 iOS Notification permissions granted: $result');
     } catch (e) {
       print('⚠️ Error requesting iOS permissions: $e');
@@ -57,18 +60,19 @@ class LocalNotificationService {
 
   static void showNotification(RemoteMessage message) {
     // Android notification details
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'high_importance_channel',
-      'High Importance Notifications',
-      importance: Importance.high,
-      priority: Priority.high,
-    );
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'high_importance_channel',
+          'High Importance Notifications',
+          importance: Importance.high,
+          priority: Priority.high,
+        );
 
     // iOS notification details
     const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
-      presentAlert: true,      // Show alert even when app is in foreground
-      presentBadge: false,     // Disable badge display
-      presentSound: true,      // Play sound
+      presentAlert: true, // Show alert even when app is in foreground
+      presentBadge: false, // Disable badge display
+      presentSound: true, // Play sound
       categoryIdentifier: 'message', // Category for actions
       threadIdentifier: 'fcm', // Group notifications by thread
     );
@@ -95,12 +99,13 @@ class LocalNotificationService {
     String? payload,
     String? categoryIdentifier,
   }) async {
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'custom_channel',
-      'Custom Notifications',
-      importance: Importance.high,
-      priority: Priority.high,
-    );
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'custom_channel',
+          'Custom Notifications',
+          importance: Importance.high,
+          priority: Priority.high,
+        );
 
     final DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
       presentAlert: true,
@@ -134,7 +139,8 @@ class LocalNotificationService {
   }
 
   /// Get pending notifications
-  static Future<List<PendingNotificationRequest>> getPendingNotifications() async {
+  static Future<List<PendingNotificationRequest>>
+  getPendingNotifications() async {
     return await _notificationsPlugin.pendingNotificationRequests();
   }
 }
