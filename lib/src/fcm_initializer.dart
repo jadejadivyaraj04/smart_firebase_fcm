@@ -25,6 +25,7 @@ class FCMInitializer {
     bool enableIOSConfig = true,
     bool showLocalNotificationsInForeground =
         false, // Control local notification display
+    String? androidNotificationIcon, // Custom Android notification icon
   }) async {
     _onTapCallback = onTap;
 
@@ -55,6 +56,7 @@ class FCMInitializer {
           print('⚠️ Failed to parse tapped payload: $payload\nError: $e');
         }
       },
+      androidNotificationIcon: androidNotificationIcon,
     );
 
     // 📤 Handle foreground messages
@@ -157,6 +159,16 @@ class FCMInitializer {
   /// 🍎 Print iOS configuration instructions
   static void printIOSConfigurationInstructions() {
     IOSConfigHelper.printIOSConfigurationInstructions();
+  }
+
+  /// 🎨 Update Android notification icon
+  static void setAndroidNotificationIcon(String iconPath) {
+    LocalNotificationService.setAndroidNotificationIcon(iconPath);
+  }
+
+  /// 🎨 Get current Android notification icon
+  static String getAndroidNotificationIcon() {
+    return LocalNotificationService.getAndroidNotificationIcon();
   }
 
   /// 🔄 Utility to parse RemoteMessage from payload string (if needed)

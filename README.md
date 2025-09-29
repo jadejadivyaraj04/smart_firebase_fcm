@@ -12,6 +12,7 @@ A lightweight, plug-and-play Firebase FCM (Push Notification) package for Flutte
 - **Notification Handling**: Supports foreground, background, and terminated state notifications.
 - **Local Notifications**: Integrates `flutter_local_notifications` for foreground notifications.
 - **Android Notification Channels**: Pre-configured for consistent Android notification delivery.
+- **🎨 Custom Notification Icons**: Easily customize Android notification icons with drawable/mipmap resources.
 - **🍎 Enhanced iOS Support**: Automated iOS configuration with foreground notification display.
 - **Feature Toggles**: Enable or disable Firebase Analytics, Crashlytics, and FCM via flags.
 - **Deep Link Redirection**: Easily handle notification taps with customizable navigation logic.
@@ -44,6 +45,7 @@ void main() async {
     onTap: FCMHandler.handleMessage,
     enableIOSConfig: true, // Enable iOS-specific configuration
     showLocalNotificationsInForeground: false, // Let Firebase handle foreground notifications automatically
+    androidNotificationIcon: '@mipmap/ic_launcher', // Custom Android notification icon
   );
 
   runApp(const MyApp());
@@ -83,6 +85,42 @@ if (Platform.isIOS) {
   final iosToken = await FCMInitializer.getIOSDeviceToken();
   print('iOS Token: $iosToken');
 }
+```
+
+### 4. Customize Android Notification Icon
+
+```dart
+// Set custom notification icon during initialization
+await FCMInitializer.initialize(
+  onTap: handleNotificationTap,
+  androidNotificationIcon: '@drawable/ic_notification', // Custom icon
+);
+
+// Or change it dynamically after initialization
+FCMInitializer.setAndroidNotificationIcon('@mipmap/ic_custom');
+
+// Get current notification icon
+String currentIcon = FCMInitializer.getAndroidNotificationIcon();
+print('Current icon: $currentIcon');
+```
+
+#### Android Icon Requirements:
+- **Format**: PNG format
+- **Size**: 24x24dp (mdpi), 36x36dp (hdpi), 48x48dp (xhdpi), 72x72dp (xxhdpi)
+- **Color**: White with transparent background (Android 5.0+)
+- **Location**: Place in `android/app/src/main/res/drawable/` or `android/app/src/main/res/mipmap/`
+
+#### Example Icon Paths:
+```dart
+// Drawable resources
+'@drawable/ic_notification'
+'@drawable/ic_message'
+'@drawable/ic_custom_icon'
+
+// Mipmap resources
+'@mipmap/ic_notification'
+'@mipmap/ic_launcher'
+'@mipmap/ic_custom'
 ```
 
 ---

@@ -17,6 +17,7 @@ void main() async {
     enableIOSConfig: true, // Enable iOS-specific configuration
     showLocalNotificationsInForeground:
         false, // Let Firebase handle foreground notifications automatically
+    androidNotificationIcon: '@mipmap/ic_launcher', // Default icon, can be changed
   );
 
   // Check iOS notification settings (iOS only)
@@ -49,6 +50,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String? _deviceToken;
   bool _isLoading = false;
+  String _currentIcon = '@mipmap/ic_launcher';
 
   @override
   void initState() {
@@ -88,6 +90,17 @@ class _MyHomePageState extends State<MyHomePage> {
   void _navigateToTestNotifications() {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => const TestNotificationWidget()),
+    );
+  }
+
+  void _changeNotificationIcon(String iconPath) {
+    setState(() {
+      _currentIcon = iconPath;
+    });
+    FCMInitializer.setAndroidNotificationIcon(iconPath);
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('✅ Notification icon changed to: $iconPath')),
     );
   }
 
@@ -134,6 +147,55 @@ class _MyHomePageState extends State<MyHomePage> {
                     ElevatedButton(
                       onPressed: _getDeviceToken,
                       child: const Text('Refresh Token'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Notification Icon Customization Section
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '🎨 Customize Notification Icon',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Current Icon: $_currentIcon',
+                      style: const TextStyle(fontFamily: 'monospace'),
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8.0,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () => _changeNotificationIcon('@mipmap/ic_launcher'),
+                          child: const Text('Default'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => _changeNotificationIcon('@drawable/ic_notification'),
+                          child: const Text('Custom'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => _changeNotificationIcon('@mipmap/ic_notification'),
+                          child: const Text('Mipmap'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Note: Make sure the icon exists in your Android resources',
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ],
                 ),

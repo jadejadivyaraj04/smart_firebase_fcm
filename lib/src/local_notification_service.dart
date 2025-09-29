@@ -5,10 +5,20 @@ import 'dart:io';
 class LocalNotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
+  
+  static String _androidNotificationIcon = '@mipmap/ic_launcher';
 
-  static Future<void> initialize({Function(String?)? onTap}) async {
-    const AndroidInitializationSettings androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+  static Future<void> initialize({
+    Function(String?)? onTap,
+    String? androidNotificationIcon,
+  }) async {
+    // Set custom notification icon if provided
+    if (androidNotificationIcon != null) {
+      _androidNotificationIcon = androidNotificationIcon;
+    }
+    
+    final AndroidInitializationSettings androidSettings =
+        AndroidInitializationSettings(_androidNotificationIcon);
 
     // iOS-specific initialization settings
     const DarwinInitializationSettings iosSettings =
@@ -58,14 +68,25 @@ class LocalNotificationService {
     }
   }
 
+  /// Update the Android notification icon
+  static void setAndroidNotificationIcon(String iconPath) {
+    _androidNotificationIcon = iconPath;
+  }
+
+  /// Get the current Android notification icon
+  static String getAndroidNotificationIcon() {
+    return _androidNotificationIcon;
+  }
+
   static void showNotification(RemoteMessage message) {
-    // Android notification details
-    const AndroidNotificationDetails androidDetails =
+    // Android notification details with custom icon
+    final AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
           'high_importance_channel',
           'High Importance Notifications',
           importance: Importance.high,
           priority: Priority.high,
+          icon: _androidNotificationIcon,
         );
 
     // iOS notification details
@@ -98,13 +119,15 @@ class LocalNotificationService {
     required String body,
     String? payload,
     String? categoryIdentifier,
+    String? androidIcon,
   }) async {
-    const AndroidNotificationDetails androidDetails =
+    final AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
           'custom_channel',
           'Custom Notifications',
           importance: Importance.high,
           priority: Priority.high,
+          icon: androidIcon ?? _androidNotificationIcon,
         );
 
     final DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
