@@ -12,6 +12,7 @@ class IOSConfigHelper {
   /// Initialize iOS-specific FCM settings
   static Future<void> initializeIOS({
     bool enableForegroundNotifications = true,
+    bool enableBadges = false,
   }) async {
     if (!isIOS) return;
 
@@ -19,10 +20,10 @@ class IOSConfigHelper {
       print('$_tag Initializing iOS-specific FCM settings...');
 
       // Request iOS notification permissions
-      await _requestIOSPermissions();
+      await _requestIOSPermissions(enableBadges);
 
       // Configure iOS-specific FCM settings
-      await _configureIOSFCM(enableForegroundNotifications);
+      await _configureIOSFCM(enableForegroundNotifications, enableBadges);
 
       // Set up iOS notification categories (optional)
       await _setupNotificationCategories();
@@ -34,7 +35,7 @@ class IOSConfigHelper {
   }
 
   /// Request iOS notification permissions
-  static Future<void> _requestIOSPermissions() async {
+  static Future<void> _requestIOSPermissions(bool enableBadges) async {
     try {
       final messaging = FirebaseMessaging.instance;
 
@@ -42,7 +43,7 @@ class IOSConfigHelper {
       final settings = await messaging.requestPermission(
         alert: true,
         announcement: false,
-        badge: false, // Disable badge permissions
+        badge: enableBadges, // Control badge permissions
         carPlay: false,
         criticalAlert: false,
         sound: true,
@@ -68,6 +69,7 @@ class IOSConfigHelper {
   /// Configure iOS-specific FCM settings
   static Future<void> _configureIOSFCM(
     bool enableForegroundNotifications,
+    bool enableBadges,
   ) async {
     try {
       final messaging = FirebaseMessaging.instance;
@@ -76,7 +78,7 @@ class IOSConfigHelper {
       if (enableForegroundNotifications) {
         await messaging.setForegroundNotificationPresentationOptions(
           alert: true, // Show alert banner
-          badge: false, // Disable badge display
+          badge: enableBadges, // Control badge display
           sound: true, // Play sound
         );
         print('$_tag iOS foreground notification options configured');

@@ -26,6 +26,7 @@ class FCMInitializer {
     bool showLocalNotificationsInForeground =
         false, // Control local notification display
     String? androidNotificationIcon, // Custom Android notification icon
+    bool enableBadges = false, // Control notification badges (disabled by default)
   }) async {
     _onTapCallback = onTap;
 
@@ -33,7 +34,9 @@ class FCMInitializer {
     await Firebase.initializeApp(options: firebaseOptions);
 
     // ✅ Ask Notification Permissions
-    await FirebaseMessaging.instance.requestPermission();
+    await FirebaseMessaging.instance.requestPermission(
+      badge: enableBadges, // Only request badge permission if enabled
+    );
 
     // 🍎 Initialize iOS-specific configuration
     if (enableIOSConfig && Platform.isIOS) {
@@ -41,6 +44,7 @@ class FCMInitializer {
       // We'll handle them manually if showLocalNotificationsInForeground is true
       await IOSConfigHelper.initializeIOS(
         enableForegroundNotifications: !showLocalNotificationsInForeground,
+        enableBadges: enableBadges,
       );
     }
 
@@ -57,6 +61,7 @@ class FCMInitializer {
         }
       },
       androidNotificationIcon: androidNotificationIcon,
+      enableBadges: enableBadges,
     );
 
     // 📤 Handle foreground messages
@@ -68,7 +73,7 @@ class FCMInitializer {
       // Only show local notification if explicitly requested
       // Firebase will automatically show notifications on iOS when configured
       if (showLocalNotificationsInForeground) {
-        LocalNotificationService.showNotification(message);
+        LocalNotificationService.showNotification(message, enableBadges: enableBadges);
       }
     });
 
@@ -92,12 +97,12 @@ class FCMInitializer {
 
     // 🍎 Additional iOS-specific setup
     if (enableIOSConfig && Platform.isIOS) {
-      await _setupIOSForegroundNotifications();
+      await _setupIOSForegroundNotifications(enableBadges);
     }
   }
 
   /// 🍎 Setup iOS foreground notification display
-  static Future<void> _setupIOSForegroundNotifications() async {
+  static Future<void> _setupIOSForegroundNotifications(bool enableBadges) async {
     if (!Platform.isIOS) return;
 
     try {
@@ -105,7 +110,7 @@ class FCMInitializer {
       await FirebaseMessaging.instance
           .setForegroundNotificationPresentationOptions(
             alert: true, // Show alert banner
-            badge: false, // Disable badge display
+            badge: enableBadges, // Control badge display
             sound: true, // Play sound
           );
 
