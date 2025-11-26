@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.11] - 2025-11-26
+
+- 🗑️ **Cleanup**: Removed unnecessary documentation files (`ANDROID_BADGE_GUIDE.md`, `IOS_IMPROVEMENTS_SUMMARY.md`) to keep the package lightweight.
+- 📝 **Documentation**: Consolidated important information into `README.md`.
+- ⬆️ **Dependencies**: Updated Firebase and local notification packages to latest versions.
+
+## [1.0.10] - 2025-11-20
+
+- 🍎 **iOS Improvements**: Enhanced iOS foreground notification handling.
+- 🛠️ **Tools**: Added `ios_setup_helper` for automated iOS configuration.
+- 🐛 **Bug Fixes**: Fixed issues with iOS permission requests and token retrieval.
+
 ## [1.0.9] - 2025-09-29
 
 ### 🎨 Custom Notification Icon Support
