@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.12] - 2026-01-07
+
+- ⬆️ **Dependencies**: Updated package dependencies to latest versions.
+
 ## [1.0.11] - 2025-11-26
 
 - 🗑️ **Cleanup**: Removed unnecessary documentation files (`ANDROID_BADGE_GUIDE.md`, `IOS_IMPROVEMENTS_SUMMARY.md`) to keep the package lightweight.
