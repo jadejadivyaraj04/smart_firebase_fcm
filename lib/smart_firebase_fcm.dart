@@ -1,3 +1,10 @@
+/// A plug-and-play modular Firebase FCM package.
+///
+/// This library exports the core FCM functionality, including initialization,
+/// handling, and feature flags, as well as re-exporting commonly used
+/// Firebase Messaging and Analytics classes for convenience.
+library smart_firebase_fcm;
+
 export 'src/fcm_initializer.dart';
 export 'src/fcm_handler.dart';
 export 'src/feature_flags.dart';

@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.14] - 2026-01-08
+
+- 📝 **Documentation**: Added a complete `example` app to demonstrate usage and improve pub.dev score.
+- 📝 **Documentation**: Added library-level documentation for `smart_firebase_fcm`.
+
 ## [1.0.13] - 2026-01-08
 
 - ✨ **Features**: Implemented functional `FirebaseFeatureFlags` logic. Flags now correctly enable/disable Analytics, Crashlytics, and FCM initialization.
