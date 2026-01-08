@@ -7,3 +7,6 @@ export 'src/local_notification_service.dart';
 // Re-export firebase_messaging types for easier use in the app
 export 'package:firebase_messaging/firebase_messaging.dart';
 export 'package:firebase_core/firebase_core.dart';
+// Export Analytics & Crashlytics for convenience since we control them
+export 'package:firebase_analytics/firebase_analytics.dart';
+export 'package:firebase_crashlytics/firebase_crashlytics.dart';

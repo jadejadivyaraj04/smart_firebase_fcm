@@ -1,333 +1,306 @@
 # 🔔 smart_firebase_fcm
 
-A lightweight, plug-and-play Firebase FCM (Push Notification) package for Flutter, offering seamless support for foreground, background, and terminated notifications, deep link redirection, local notifications, and customizable Firebase Analytics and Crashlytics integration.
+A lightweight, plug-and-play modular Firebase FCM (Push Notification) package for Flutter. It offers seamless support for foreground, background, and terminated notifications, deep link redirection, local notifications, and manual feature toggles for Analytics and Crashlytics.
 
-**🍎 NEW: Enhanced iOS Support with Automated Setup Tools!**
+**🍎 NEW: Enhanced iOS Support with Automated Setup Tools and Foreground Notification Handling!**
 
 ---
 
 ## ✨ Features
 
-- **One-line Setup**: Initialize Firebase and FCM with a single call.
-- **Notification Handling**: Supports foreground, background, and terminated state notifications.
-- **Local Notifications**: Integrates `flutter_local_notifications` for foreground notifications.
-- **Android Notification Channels**: Pre-configured for consistent Android notification delivery.
-- **🎨 Custom Notification Icons**: Easily customize Android notification icons with drawable/mipmap resources.
-- **🍎 Enhanced iOS Support**: Automated iOS configuration with foreground notification display.
-- **Feature Toggles**: Enable or disable Firebase Analytics, Crashlytics, and FCM via flags.
-- **Deep Link Redirection**: Easily handle notification taps with customizable navigation logic.
-- **Clean & Modular**: Well-structured, extensible code for easy customization.
-- **🚀 CLI Generator**: Generate notification handler files with a single command.
-- **🍎 iOS Setup Helper**: Automated iOS configuration and setup assistance.
+- **🚀 One-line Initialization**: Initialize Firebase, FCM, and Local Notifications with a single method call.
+- **📱 Platform Support**: flawless support for **Android** and **iOS**.
+- **🔔 Notification States**: Handle notifications in all states: **Foreground**, **Background**, and **Terminated**.
+- **💬 Local Notifications**: Built-in support for `flutter_local_notifications` to show alerts while the app is open.
+- **🍎 Enhanced iOS Support**: 
+  - Automated configuration helper.
+  - Native-like foreground notification presentation options (Alert, Badge, Sound).
+  - Prevention of duplicate notifications.
+- **🎨 Custom Android Icons**: complete control over notification icons (drawable/mipmap).
+- **🛤️ Deep Linking**: Easy redirection logic for notification taps.
+- **🔧 Feature Flags**: Manually toggle Firebase Analytics, Crashlytics, and FCM at runtime.
+- **⚡ CLI Generators**: specific tools to generate boilerplate code and configure iOS.
 
 ---
 
-## 🚀 Quick Start
+## 📦 Installation
 
-### 1. Configure Firebase Features
+Add the package to your `pubspec.yaml`:
 
-Set up Firebase and FCM in your app with customizable feature flags.
+```yaml
+dependencies:
+  smart_firebase_fcm: ^1.0.12
+```
+
+Or run:
+
+```bash
+flutter pub add smart_firebase_fcm
+```
+
+---
+
+## ⚙️ Platform Setup
+
+### 📱 Android Setup
+
+1.  **Google Services File**: Download `google-services.json` from the Firebase Console and place it in `android/app/`.
+2.  **Gradle Configuration**:
+    *   **`android/build.gradle`**:
+        ```gradle
+        dependencies {
+            classpath 'com.google.gms:google-services:4.4.0' // Use latest version
+        }
+        ```
+    *   **`android/app/build.gradle`**:
+        ```gradle
+        apply plugin: 'com.google.gms.google-services'
+        ```
+3.  **Manifest Configuration** (`android/app/src/main/AndroidManifest.xml`):
+    Add the `INTERNET` permission and the metadata for the notification channel (optional but recommended for custom defaults).
+
+    ```xml
+    <manifest ...>
+        <uses-permission android:name="android.permission.INTERNET"/>
+        <uses-permission android:name="android.permission.VIBRATE"/>
+
+        <application ...>
+            <!-- ... -->
+            
+            <!-- Default Notification Channel -->
+            <meta-data
+                android:name="com.google.firebase.messaging.default_notification_channel_id"
+                android:value="high_importance_channel" />
+        </application>
+    </manifest>
+    ```
+
+### 🍎 iOS Setup
+
+You can use our **automated tool** or set it up manually.
+
+#### Option A: Automated Setup (Recommended)
+Run the built-in helper tool to check your configuration and generate necessary files.
+
+```bash
+# Check current setup
+dart run smart_firebase_fcm:ios_setup_helper --check
+
+# Generate configuration files (Podfile, Info.plist entries)
+dart run smart_firebase_fcm:ios_setup_helper --generate
+```
+
+#### Option B: Manual Setup
+1.  **Google Service File**: Download `GoogleService-Info.plist` from Firebase Console and add it to `ios/Runner/` using Xcode. **Make sure to select "Copy items if needed" and add to targets.**
+2.  **Capabilities**: Open Xcode (`ios/Runner.xcworkspace`) -> Select Runner Target -> "Signing & Capabilities":
+    *   Add **Push Notifications**.
+    *   Add **Background Modes** and check **Remote notifications**.
+3.  **Podfile**: Ensure your `ios/Podfile` platform is set to at least 12.0.
+    ```ruby
+    platform :ios, '12.0'
+    ```
+4.  **Info.plist**: Disable method swizzling if you want full control (optional, but handled by the package).
+    ```xml
+    <key>FirebaseAppDelegateProxyEnabled</key>
+    <false/>
+    ```
+
+---
+
+## 🚀 Usage
+
+### 1. Initialization
+
+Initialize the package in your `main.dart`. You can also configure Feature Flags here.
 
 ```dart
 import 'package:smart_firebase_fcm/smart_firebase_fcm.dart';
-import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Configure Firebase feature flags
-  FirebaseFeatureFlags.enableAnalytics = false;
+  // 1. Configure Feature Flags (Optional)
+  // Control which Firebase features are enabled at startup
+  FirebaseFeatureFlags.enableAnalytics = true;
   FirebaseFeatureFlags.enableCrashlytics = true;
   FirebaseFeatureFlags.enableFCM = true;
 
-  // Initialize FCM with iOS configuration enabled
+  // 2. Initialize FCM
   await FCMInitializer.initialize(
-    onTap: FCMHandler.handleMessage,
-    enableIOSConfig: true, // Enable iOS-specific configuration
-    showLocalNotificationsInForeground: false, // Let Firebase handle foreground notifications automatically
-    androidNotificationIcon: '@mipmap/ic_launcher', // Custom Android notification icon
+    // Handle notification taps
+    onTap: (message) {
+      print('Notification Tapped: ${message.data}');
+      // Navigate to screen based on message.data
+    },
+    
+    // iOS Specifics
+    enableIOSConfig: true,
+    showLocalNotificationsInForeground: false, // Set true to enforce local notifications on iOS instead of native banners
+    
+    // Android Specifics
+    androidNotificationIcon: '@mipmap/ic_launcher', // Custom icon name
+    enableBadges: true,
   );
 
   runApp(const MyApp());
 }
 ```
 
-### 2. Handle Notification Taps
+### 2. Handling Taps (Navigation)
 
-Implement custom navigation logic for notification taps using the `handleMessage` callback.
+The `onTap` callback in `initialize` handles taps from **all states** (Background, Terminated, Foreground (if using local notifications)).
 
 ```dart
-void handleMessage(RemoteMessage message) {
-  final type = message.data['type'];
+void handleNotificationTap(RemoteMessage message) {
+  final String? screen = message.data['screen'];
+  final String? id = message.data['id'];
 
-  switch (type) {
-    case 'order':
-      navigatorKey.currentState?.pushNamed('/order', arguments: message.data['order_id']);
-      break;
-    case 'chat':
-      navigatorKey.currentState?.pushNamed('/chat');
-      break;
-    default:
-      print('Unknown notification type: $type');
-      break;
+  if (screen == 'chat') {
+    navigatorKey.currentState?.pushNamed('/chat', arguments: id);
+  } else if (screen == 'profile') {
+    navigatorKey.currentState?.pushNamed('/profile');
   }
 }
 ```
 
-### 3. Retrieve FCM Device Token
+### 3. Feature Flags
+
+You can enable or disable Firebase features dynamically. Note that these should usually be set *before* calling `initialize()` or can be useful for debugging.
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `FirebaseFeatureFlags.enableFCM` | Controls if FCM setup runs at all. | `true` |
+| `FirebaseFeatureFlags.enableAnalytics` | Enables/Disables `firebase_analytics`. | `true` |
+| `FirebaseFeatureFlags.enableCrashlytics` | Enables/Disables `firebase_crashlytics`. | `true` |
+
+### 4. Customizing Android Icons
+
+You can use different icons for your Android notifications.
+
+**Requirements**:
+*   Icon must be in `android/app/src/main/res/drawable` or `mipmap` folders.
+*   Transparent background (white content) strongly recommended for Android 5.0+.
 
 ```dart
-final token = await FCMInitializer.getDeviceToken();
-print('FCM Token: $token');
-
-// iOS-specific token retrieval
-if (Platform.isIOS) {
-  final iosToken = await FCMInitializer.getIOSDeviceToken();
-  print('iOS Token: $iosToken');
-}
-```
-
-### 4. Customize Android Notification Icon
-
-```dart
-// Set custom notification icon during initialization
+// Set during init
 await FCMInitializer.initialize(
-  onTap: handleNotificationTap,
-  androidNotificationIcon: '@drawable/ic_notification', // Custom icon
+  onTap: (msg) {},
+  androidNotificationIcon: '@drawable/ic_stat_notification',
 );
 
-// Or change it dynamically after initialization
-FCMInitializer.setAndroidNotificationIcon('@mipmap/ic_custom');
-
-// Get current notification icon
-String currentIcon = FCMInitializer.getAndroidNotificationIcon();
-print('Current icon: $currentIcon');
+// OR Change dynamically later
+FCMInitializer.setAndroidNotificationIcon('@mipmap/ic_new_icon');
 ```
 
-#### Android Icon Requirements:
-- **Format**: PNG format
-- **Size**: 24x24dp (mdpi), 36x36dp (hdpi), 48x48dp (xhdpi), 72x72dp (xxhdpi)
-- **Color**: White with transparent background (Android 5.0+)
-- **Location**: Place in `android/app/src/main/res/drawable/` or `android/app/src/main/res/mipmap/`
+### 5. Using Analytics & Crashlytics
 
-#### Example Icon Paths:
-```dart
-// Drawable resources
-'@drawable/ic_notification'
-'@drawable/ic_message'
-'@drawable/ic_custom_icon'
+Since this package manages the initialization of Firebase Analytics and Crashlytics, it also exports their classes for your convenience. You don't need to add separate dependencies for them.
 
-// Mipmap resources
-'@mipmap/ic_notification'
-'@mipmap/ic_launcher'
-'@mipmap/ic_custom'
-```
+#### 📊 Firebase Analytics Example
 
----
-
-## 🍎 iOS Configuration
-
-### Automated iOS Setup
-
-Use the iOS setup helper to automate iOS configuration:
-
-```bash
-# Check current iOS setup
-dart run ios_setup_helper --check
-
-# View iOS setup instructions
-dart run ios_setup_helper --instructions
-
-# Generate iOS configuration files
-dart run ios_setup_helper --generate
-
-# Interactive setup mode
-dart run ios_setup_helper
-```
-
-### iOS-specific Features
+Make sure `FirebaseFeatureFlags.enableAnalytics = true` (default).
 
 ```dart
-// Check iOS notification settings
-await FCMInitializer.checkIOSNotificationSettings();
+// Log a custom event
+await FirebaseAnalytics.instance.logEvent(
+  name: 'purchase_complete',
+  parameters: {
+    'item_id': 'p_123',
+    'value': 29.99,
+    'currency': 'USD',
+  },
+);
 
-// Print iOS configuration instructions
-FCMInitializer.printIOSConfigurationInstructions();
+// Set user property
+await FirebaseAnalytics.instance.setUserProperty(
+  name: 'favorite_food', 
+  value: 'pizza'
+);
 
-// Get iOS-specific device token
-final iosToken = await FCMInitializer.getIOSDeviceToken();
-```
-
-### iOS Foreground Notifications
-
-The package now automatically handles iOS foreground notification display:
-
-- ✅ Shows notification banners when app is in foreground
-- ✅ Plays notification sounds
-- ✅ Handles notification taps properly
-- ✅ **Prevents duplicate notifications** by controlling Firebase vs local notification display
-
-#### Duplicate Notification Prevention
-
-To avoid duplicate notifications on iOS, the package provides a `showLocalNotificationsInForeground` flag:
-
-```dart
-await FCMInitializer.initialize(
-  onTap: handleNotificationTap,
-  enableIOSConfig: true,
-  showLocalNotificationsInForeground: false, // Let Firebase handle automatically
+// Log screen view
+await FirebaseAnalytics.instance.logScreenView(
+  screenName: 'HomeScreen',
+  screenClass: 'Home',
 );
 ```
 
-- **`false` (default)**: Firebase shows notifications automatically, no local notifications
-- **`true`**: Firebase automatic display disabled, local notifications shown instead
+#### 💥 Firebase Crashlytics Example
 
----
-
-## 🛠️ CLI Generator
-
-Generate a complete notification handler file with a single command:
-
-```bash
-dart run smart_firebase_fcm:smart_firebase_fcm_generator notification path=lib/services/notification_handler.dart export=lib/exports.dart
-```
-
-### CLI Options:
-
-- `path`: Output path for the notification handler file
-- `export`: (Optional) Export file path to automatically add the import
-
-### Example Generated File:
-
-The CLI will create a complete `NotificationHandler` class with:
-
-- Firebase initialization
-- Foreground, background, and terminated state handling
-- Permission requests
-- Topic subscription/unsubscription
-- Device token retrieval
-- Automatic routing and navigation handling
+Make sure `FirebaseFeatureFlags.enableCrashlytics = true` (default).
 
 ```dart
-// Generated: lib/services/notification_handler.dart
-import 'package:your_project/exports.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_core/firebase_core.dart';
-
-class NotificationHandler {
-  static Future<void> initialize() async {
-    // Complete implementation generated automatically
-  }
-  
-  static Future<String?> getDeviceToken() async {
-    // Device token retrieval logic
-  }
-  
-  static void handleNotificationTap(RemoteMessage message) {
-    // Notification tap handling with routing
-  }
-  
-  // ... and more methods
+// Manually record a non-fatal error
+try {
+  throw Exception('Something went wrong!');
+} catch (e, stack) {
+  FirebaseCrashlytics.instance.recordError(e, stack, reason: 'Manual error check');
 }
-```
 
-### Usage After Generation:
+// Add custom logs to Crashlytics (shows up in crash reports)
+FirebaseCrashlytics.instance.log('User tapped the broken button');
 
-```dart
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize the generated notification handler
-  await NotificationHandler.initialize();
-  
-  runApp(MyApp());
-}
+// Set a custom key for context
+FirebaseCrashlytics.instance.setCustomKey('app_mode', 'dark');
+
+// Force a test crash (Do not use in production!)
+// FirebaseCrashlytics.instance.crash();
 ```
 
 ---
 
-## 📱 Android Configuration
+## 🛠️ CLI Tools
 
-1. Add the `google-services.json` file to your Android project at:
+The package comes with powerful CLI tools to speed up development.
 
-   ```
-   android/app/google-services.json
-   ```
+### 1. Notification Handler Generator
 
-2. Update your `android/build.gradle`:
-
-```gradle
-buildscript {
-  dependencies {
-    classpath 'com.google.gms:google-services:4.3.15'
-  }
-}
-```
-
-3. Update `android/app/build.gradle`:
-
-```gradle
-apply plugin: 'com.google.gms.google-services'
-
-dependencies {
-  implementation 'com.google.firebase:firebase-messaging:23.0.8'
-}
-```
-
-4. Ensure these permissions in `AndroidManifest.xml`:
-
-```xml
-<uses-permission android:name="android.permission.INTERNET"/>
-```
-
-5. Add FCM service inside `<application>` tag:
-
-```xml
-<service
-        android:name="com.google.firebase.messaging.FirebaseMessagingService"
-        android:exported="true">
-  <intent-filter>
-    <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-  </intent-filter>
-</service>
-```
-
----
-
-## 🍎 iOS Configuration
-
-### Quick Setup with iOS Helper
+Generate a full `NotificationHandler` service file implementation for your project.
 
 ```bash
-# Run the iOS setup helper
-dart run ios_setup_helper
-
-# This will guide you through the entire iOS setup process
+dart run smart_firebase_fcm:smart_firebase_fcm_generator notification path=lib/core/services/notification_service.dart export=lib/shared/exports.dart
 ```
 
-### Manual Setup
+*   `path`: Where to create the file.
+*   `export` (optional): Adds `export '...';` to the specified file.
 
-1. Add the `GoogleService-Info.plist` file to your Xcode project in `Runner/`.
+### 2. iOS Setup Helper
 
-2. In `ios/Podfile`, ensure platform is at least iOS 12:
+A utility to check and fix iOS configuration.
 
-```ruby
-platform :ios, '12.0'
+```bash
+# Interactive Mode
+dart run smart_firebase_fcm:ios_setup_helper
+
+# CLI Arguments
+dart run smart_firebase_fcm:ios_setup_helper --check
+dart run smart_firebase_fcm:ios_setup_helper --instructions
 ```
 
-3. Add required capabilities:
+---
 
-* Enable **Push Notifications**
-* Enable **Background Modes** → Check **Remote notifications**
+## ❓ Troubleshooting
 
-4. Add notification permission request in `Info.plist`:
+### ❌ Notification not showing in Foreground (iOS)
+*   **Cause**: `showLocalNotificationsInForeground` is false, and iOS native presentation options might be disabled.
+*   **Fix**: The package enables native presentation (Alert/Sound) by default if `enableIOSConfig` is true. Ensure your phone is not in "Do Not Disturb" mode.
 
-```xml
-<key>FirebaseAppDelegateProxyEnabled</key>
-<false/>
-<key>NSAppTransportSecurity</key>
-<dict>
-<key>NSAllowsArbitraryLoads</key>
-<true/>
-</dict>
-```
+### ❌ "APNS device token not set" (iOS)
+*   **Cause**: Running on Simulator or Push Capabilities missing.
+*   **Fix**:
+    1.  **Must test on a Real Device**. Push notifications do not work mainly on Simulators (though Xcode 11.4+ supports it with specific setup files, real device is recommended).
+    2.  Verify "Push Notifications" capability in Xcode.
+    3.  Verify `GoogleService-Info.plist` is valid.
+
+### ❌ Android Build Failures
+*   **Cause**: Missing `google-services.json` or incorrect Gradle setup.
+*   **Fix**: Ensure `google-services.json` is in `android/app/` and you have applied the google-services plugin in `android/app/build.gradle`.
+
+### ❌ Custom Icon showing as White Block (Android)
+*   **Cause**: The icon has a background color. Android requires transparent backgrounds for notification icons (small icons).
+*   **Fix**: Use an asset generator to create a transparent white-only version of your logo and put it in `res/drawable`.
+
+---
+
+## 📄 License
+
+This package is open-source and available under the MIT License.

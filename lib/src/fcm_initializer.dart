@@ -1,5 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'feature_flags.dart';
 import 'local_notification_service.dart';
 import 'ios_config_helper.dart';
 import 'dart:io';
@@ -26,12 +29,57 @@ class FCMInitializer {
     bool showLocalNotificationsInForeground =
         false, // Control local notification display
     String? androidNotificationIcon, // Custom Android notification icon
-    bool enableBadges = false, // Control notification badges (disabled by default)
+    bool enableBadges =
+        false, // Control notification badges (disabled by default)
   }) async {
     _onTapCallback = onTap;
 
     // 🔧 Firebase Core Initialization
     await Firebase.initializeApp(options: firebaseOptions);
+
+    // 📊 Handle Analytics
+    if (FirebaseFeatureFlags.enableAnalytics) {
+      try {
+        await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
+        print('📊 Firebase Analytics Enabled');
+      } catch (e) {
+        print('⚠️ Failed to enable Firebase Analytics: $e');
+      }
+    } else {
+      try {
+        await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(false);
+        print('📊 Firebase Analytics Disabled');
+      } catch (e) {
+        print('⚠️ Failed to disable Firebase Analytics: $e');
+      }
+    }
+
+    // 💥 Handle Crashlytics
+    if (FirebaseFeatureFlags.enableCrashlytics) {
+      try {
+        await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(
+          true,
+        );
+        print('💥 Firebase Crashlytics Enabled');
+      } catch (e) {
+        print('⚠️ Failed to enable Firebase Crashlytics: $e');
+      }
+    } else {
+      try {
+        await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(
+          false,
+        );
+        print('💥 Firebase Crashlytics Disabled');
+      } catch (e) {
+        print('⚠️ Failed to disable Firebase Crashlytics: $e');
+      }
+    }
+
+    // 🛑 If FCM is disabled, stop here
+    if (!FirebaseFeatureFlags.enableFCM) {
+      print('🔕 FCM is disabled via feature flags. Skipping FCM setup.');
+      return;
+    }
 
     // ✅ Ask Notification Permissions
     await FirebaseMessaging.instance.requestPermission(
@@ -73,7 +121,10 @@ class FCMInitializer {
       // Only show local notification if explicitly requested
       // Firebase will automatically show notifications on iOS when configured
       if (showLocalNotificationsInForeground) {
-        LocalNotificationService.showNotification(message, enableBadges: enableBadges);
+        LocalNotificationService.showNotification(
+          message,
+          enableBadges: enableBadges,
+        );
       }
     });
 
@@ -102,7 +153,9 @@ class FCMInitializer {
   }
 
   /// 🍎 Setup iOS foreground notification display
-  static Future<void> _setupIOSForegroundNotifications(bool enableBadges) async {
+  static Future<void> _setupIOSForegroundNotifications(
+    bool enableBadges,
+  ) async {
     if (!Platform.isIOS) return;
 
     try {

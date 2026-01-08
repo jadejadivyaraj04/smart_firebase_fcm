@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.13] - 2026-01-08
+
+- ✨ **Features**: Implemented functional `FirebaseFeatureFlags` logic. Flags now correctly enable/disable Analytics, Crashlytics, and FCM initialization.
+- 📦 **Exports**: Exported `firebase_analytics` and `firebase_crashlytics` for direct usage without extra dependencies.
+- 📝 **Documentation**: Major `README.md` overhaul with detailed setup guides, feature flag usage, and troubleshooting.
+- 🐛 **Fixes**: Fixed discrepancy where feature flags were defined but ignored in initialization.
+
 ## [1.0.12] - 2026-01-07
 
 - ⬆️ **Dependencies**: Updated package dependencies to latest versions.

@@ -3,7 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'dart:io';
 
 /// Local Notification Service for handling FCM notifications
-/// 
+///
 /// Badge Control:
 /// - iOS: Badges are controlled via presentBadge parameter in DarwinNotificationDetails
 /// - Android: Badges are controlled at the system level and cannot be disabled per notification
@@ -11,7 +11,7 @@ import 'dart:io';
 class LocalNotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  
+
   static String _androidNotificationIcon = '@mipmap/ic_launcher';
 
   static Future<void> initialize({
@@ -23,20 +23,19 @@ class LocalNotificationService {
     if (androidNotificationIcon != null) {
       _androidNotificationIcon = androidNotificationIcon;
     }
-    
+
     // Create Android notification channels with badge control
     await _createNotificationChannels(enableBadges);
-    
+
     final AndroidInitializationSettings androidSettings =
         AndroidInitializationSettings(_androidNotificationIcon);
 
     // iOS-specific initialization settings
-    DarwinInitializationSettings iosSettings =
-        DarwinInitializationSettings(
-          requestAlertPermission: true,
-          requestBadgePermission: enableBadges, // Control badge permissions
-          requestSoundPermission: true,
-        );
+    DarwinInitializationSettings iosSettings = DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: enableBadges, // Control badge permissions
+      requestSoundPermission: true,
+    );
 
     final InitializationSettings initSettings = InitializationSettings(
       android: androidSettings,
@@ -63,7 +62,7 @@ class LocalNotificationService {
   }
 
   /// Clear notification badge (iOS and Android)
-  /// 
+  ///
   /// iOS: Clears the app icon badge number by canceling all notifications
   /// Android: Clears badges by canceling all notifications (badges are tied to active notifications)
   /// Note: Android badge behavior varies by launcher and Android version
@@ -71,18 +70,20 @@ class LocalNotificationService {
     try {
       // Cancel all notifications - this clears badges on both platforms
       await _notificationsPlugin.cancelAll();
-      
+
       if (Platform.isIOS) {
         print('✅ iOS badges cleared');
       } else if (Platform.isAndroid) {
         print('✅ Android badges cleared (via notification cancellation)');
-        print('ℹ️ Note: Android badges are controlled by notification channels');
+        print(
+          'ℹ️ Note: Android badges are controlled by notification channels',
+        );
       }
     } catch (e) {
       print('⚠️ Error clearing badge: $e');
     }
   }
-  
+
   /// Cancel a specific notification by ID
   /// This will also remove any associated badge on that notification
   static Future<void> cancelNotification(int id) async {
@@ -93,10 +94,11 @@ class LocalNotificationService {
       print('⚠️ Error cancelling notification: $e');
     }
   }
-  
+
   /// Get pending notifications
   /// Useful to check if there are active notifications that might show badges
-  static Future<List<PendingNotificationRequest>> getPendingNotifications() async {
+  static Future<List<PendingNotificationRequest>>
+  getPendingNotifications() async {
     try {
       return await _notificationsPlugin.pendingNotificationRequests();
     } catch (e) {
@@ -104,41 +106,42 @@ class LocalNotificationService {
       return [];
     }
   }
-  
+
   /// Create notification channels with badge control (Android)
   static Future<void> _createNotificationChannels(bool enableBadges) async {
     if (!Platform.isAndroid) return;
-    
+
     try {
       final androidPlugin = _notificationsPlugin
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>();
-      
+            AndroidFlutterLocalNotificationsPlugin
+          >();
+
       if (androidPlugin != null) {
         // High importance channel
         const AndroidNotificationChannel highImportanceChannel =
             AndroidNotificationChannel(
-          'high_importance_channel',
-          'High Importance Notifications',
-          description: 'This channel is used for important notifications',
-          importance: Importance.high,
-          showBadge: false, // Disable badges by default
-        );
-        
+              'high_importance_channel',
+              'High Importance Notifications',
+              description: 'This channel is used for important notifications',
+              importance: Importance.high,
+              showBadge: false, // Disable badges by default
+            );
+
         // Custom channel
         const AndroidNotificationChannel customChannel =
             AndroidNotificationChannel(
-          'custom_channel',
-          'Custom Notifications',
-          description: 'This channel is used for custom notifications',
-          importance: Importance.high,
-          showBadge: false, // Disable badges by default
-        );
-        
+              'custom_channel',
+              'Custom Notifications',
+              description: 'This channel is used for custom notifications',
+              importance: Importance.high,
+              showBadge: false, // Disable badges by default
+            );
+
         // Create the channels
         await androidPlugin.createNotificationChannel(highImportanceChannel);
         await androidPlugin.createNotificationChannel(customChannel);
-        
+
         print('✅ Android notification channels created with badges disabled');
       }
     } catch (e) {
@@ -175,7 +178,10 @@ class LocalNotificationService {
     return _androidNotificationIcon;
   }
 
-  static void showNotification(RemoteMessage message, {bool enableBadges = false}) {
+  static void showNotification(
+    RemoteMessage message, {
+    bool enableBadges = false,
+  }) {
     // Android notification details with custom icon
     // Note: Android notification badges are controlled at the system level
     // and cannot be disabled per notification in flutter_local_notifications
